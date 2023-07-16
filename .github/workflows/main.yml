@@ -1,1 +1,7 @@
-
+name: Pruebas y despliegue
+on: [push]
+jobs: 
+run-on: ubuntu-latest
+steps:
+uses: /checkout@v2
+run: | apt-get install-
