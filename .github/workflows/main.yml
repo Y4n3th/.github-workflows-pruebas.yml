@@ -6,23 +6,32 @@ steps:
 uses: /checkout@v2
 run: | apt-get install-
 
-name: Ejecutar Pruebas
-on: [push]
+name: Pruebas y despliegue
+on:
+  push:
+    branches:
+      - main
 jobs:
-pruebas:
-run-on: ubuntu-latest
-steps:
-uses: /checkout@v2
-name: Instalar dependencias
-run: | npm test
-despliegue:
-needs: Pruebas
-run-on: ubuntu-latest
-steps:
-uses: /checkout@v2
-name: Desplegar aplicación
- run: |
-    cd repo
-    npm ci
-    npm run build
-    npm start
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Instalar dependencias
+        run: npm install
+      - name: Ejecutar pruebas
+        run: npm test
+
+  despliegue:
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Desplegar aplicación
+        run: |
+          cd repo
+          npm ci
+          npm run build
+          npm start
+
