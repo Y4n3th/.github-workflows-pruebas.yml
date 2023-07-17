@@ -1,28 +1,36 @@
-name: Pruebas y despliegue
-on: [push]
-jobs: 
-run-on: ubuntu-latest
-steps:
-uses: /checkout@v2
-run: | apt-get install-
+name: Pruebas y Despliegue
 
-name: Ejecutar Pruebas
-on: [push]
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-pruebas:
-run-on: ubuntu-latest
-steps:
-uses: /checkout@v2
-name: Instalar dependencias
-run: | npm test
-despliegue:
-needs: Pruebas
-run-on: ubuntu-latest
-steps:
-uses: /checkout@v2
-name: Desplegar aplicación
- run: |
-    cd repo
-    npm ci
-    npm run build
-    npm start
+  pruebas:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Verificar código
+      uses: actions/checkout@v2
+
+    - name: Configurar entorno
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential git curl
+
+    - name: Ejecutar pruebas
+      run: |
+        npm ci
+        npm test
+
+  despliegue:
+    needs: pruebas
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Desplegar aplicación
+      run: |
+        cd repo
+        npm ci
+        npm run build
+        npm start
